@@ -2,6 +2,7 @@
 {{ decorator }}
 {% endfor -%}
 class {{ class_name }}({{ base_class }}):
+    """{{ description }}"""
 {%- if not fields %}
     pass
 {%- endif %}

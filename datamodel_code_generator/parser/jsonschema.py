@@ -84,6 +84,7 @@ class JsonSchemaObject(BaseModel):
     x_enum_varnames: List[str] = Field(  # type: ignore
         default=[], alias='x-enum-varnames'
     )
+    description: Optional[str]
 
     @property
     def is_object(self) -> bool:
@@ -130,10 +131,10 @@ class JsonSchemaParser(Parser):
         )
 
     def get_data_type(self, obj: JsonSchemaObject) -> DataType:
-        format_ = obj.format or 'default'
         if obj.type is None:
             raise ValueError(f'invalid schema object {obj}')
 
+        format_ = obj.format if obj.format in json_schema_data_formats else "default"
         return self.data_model_type.get_data_type(
             json_schema_data_formats[obj.type][format_], **obj.dict()
         )
@@ -298,9 +299,11 @@ class JsonSchemaParser(Parser):
         fields = self.parse_object_fields(obj)
 
         self.set_additional_properties(name, obj)
+        import sys; print("->>>", obj.description, file=sys.stderr)
         data_model_type = self.data_model_type(
             name,
             fields=fields,
+            description=obj.description,
             custom_base_class=self.base_class,
             custom_template_dir=self.custom_template_dir,
             extra_template_data=self.extra_template_data,

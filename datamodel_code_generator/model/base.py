@@ -12,7 +12,7 @@ from datamodel_code_generator.imports import (
     Import,
 )
 from datamodel_code_generator.types import DataType, Types
-from jinja2 import Template
+from jinja2 import Template, environment
 from pydantic import BaseModel, validator
 
 TEMPLATE_DIR: Path = Path(__file__).parents[0] / 'template'
@@ -21,6 +21,11 @@ UNION: str = 'Union'
 OPTIONAL: str = 'Optional'
 LIST: str = 'List'
 
+
+def escape_if_starts_with_number(value):
+    return value if not value[0].isdigit() else "_" + value
+
+environment.DEFAULT_FILTERS["escape_if_starts_with_number"] = escape_if_starts_with_number
 
 def optional(func: Callable) -> Callable:
     @wraps(func)
@@ -93,6 +98,7 @@ class TemplateBase(ABC):
         self._template: Template = Template(
             (TEMPLATE_DIR / self.template_file_path).read_text()
         )
+        
 
     @property
     def template(self) -> Template:
@@ -117,6 +123,7 @@ class DataModel(TemplateBase, ABC):
         self,
         name: str,
         fields: List[DataModelField],
+	description: Optional[str] = "",
         decorators: Optional[List[str]] = None,
         base_classes: Optional[List[str]] = None,
         custom_base_class: Optional[str] = None,
@@ -138,6 +145,7 @@ class DataModel(TemplateBase, ABC):
         self.name: str = name
         self.fields: List[DataModelField] = fields or []
         self.decorators: List[str] = decorators or []
+        self.description = description
         self.imports: List[Import] = imports or []
         self.base_class: Optional[str] = None
         base_classes = [base_class for base_class in base_classes or [] if base_class]
@@ -191,7 +199,10 @@ class DataModel(TemplateBase, ABC):
         super().__init__(template_file_path=template_file_path)
 
     def render(self) -> str:
+        import sys
+        print(self.description, file=sys.stderr)
         response = self._render(
+            description=self.description,
             class_name=self.class_name,
             fields=self.fields,
             decorators=self.decorators,

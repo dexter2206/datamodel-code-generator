@@ -207,6 +207,8 @@ class Parser(ABC):
                 result += ['\n', self.dump_resolve_reference_action(models_to_update)]
 
             body = '\n'.join(result)
+            import sys
+            print(body, file=sys.stderr)
             if format_:
                 body = format_code(body, self.target_python_version)
 

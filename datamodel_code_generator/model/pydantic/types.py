@@ -92,7 +92,7 @@ string_kwargs = {'minItems', 'maxItems', 'minLength', 'maxLength', 'pattern'}
 
 def transform_kwargs(kwargs: Dict[str, Any], filter: Set[str]) -> Dict[str, str]:
     return {
-        kwargs_schema_to_model.get(k, k): v
+        kwargs_schema_to_model.get(k, k): v if k != "pattern" else f'"{v}"'
         for (k, v) in kwargs.items()
         if v is not None and k in filter
     }
