@@ -302,7 +302,7 @@ class JsonSchemaParser(Parser):
         fields = self.parse_object_fields(obj)
 
         self.set_additional_properties(name, obj)
-        import sys; print("->>>", obj.description, file=sys.stderr)
+
         data_model_type = self.data_model_type(
             name,
             fields=fields,

@@ -123,7 +123,7 @@ class DataModel(TemplateBase, ABC):
         self,
         name: str,
         fields: List[DataModelField],
-	description: Optional[str] = "",
+        description: Optional[str] = "",
         decorators: Optional[List[str]] = None,
         base_classes: Optional[List[str]] = None,
         custom_base_class: Optional[str] = None,
@@ -199,8 +199,6 @@ class DataModel(TemplateBase, ABC):
         super().__init__(template_file_path=template_file_path)
 
     def render(self) -> str:
-        import sys
-        print(self.description, file=sys.stderr)
         response = self._render(
             description=self.description,
             class_name=self.class_name,
