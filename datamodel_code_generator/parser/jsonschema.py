@@ -53,6 +53,7 @@ json_schema_data_formats: Dict[str, Dict[str, Types]] = {
         'uri': Types.uri,
         'ipv4': Types.ipv4,
         'ipv6': Types.ipv6,
+        'url': Types.url
     },
     'boolean': {'default': Types.boolean},
     'object': {'default': Types.object},
@@ -62,7 +63,7 @@ json_schema_data_formats: Dict[str, Dict[str, Types]] = {
 class JsonSchemaObject(BaseModel):
     items: Union[List['JsonSchemaObject'], 'JsonSchemaObject', None]
     uniqueItem: Optional[bool]
-    type: Optional[str]
+    type: Optional[str] = "object"
     format: Optional[str]
     pattern: Optional[str]
     minLength: Optional[int]
@@ -238,6 +239,8 @@ class JsonSchemaParser(Parser):
         fields: List[DataModelField] = []
 
         for field_name, field in properties.items():  # type: ignore
+            if field_name == "or":
+                field_name = "or_"
             is_list = False
             field_types: List[DataType]
             if field.ref:

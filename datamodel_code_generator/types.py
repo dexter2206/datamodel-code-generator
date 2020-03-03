@@ -66,6 +66,7 @@ class Types(Enum):
     uuid4 = auto()
     uuid5 = auto()
     uri = auto()
+    url = auto()
     ipv4 = auto()
     ipv6 = auto()
     boolean = auto()

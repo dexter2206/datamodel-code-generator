@@ -64,6 +64,7 @@ type_map: Dict[Types, DataType] = {
             Import(from_='typing', import_='Dict'),
         ],
     ),
+    Types.url: DataType(type="AnyUrl", imports=[Import(from_="pydantic", import_="Any")])
 }
 
 kwargs_schema_to_model = {

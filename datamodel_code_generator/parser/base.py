@@ -34,7 +34,7 @@ def get_singular_name(name: str) -> str:
 
 
 def snake_to_upper_camel(word: str) -> str:
-    return ''.join(x[0].upper() + x[1:] for x in word.split('_'))
+    return ''.join(x if not x else x[0].upper() + x[1:] for x in word.split('_'))
 
 
 def dump_templates(templates: Union[DataModel, List[DataModel]]) -> str:
