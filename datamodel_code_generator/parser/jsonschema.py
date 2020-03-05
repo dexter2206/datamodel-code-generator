@@ -63,7 +63,7 @@ json_schema_data_formats: Dict[str, Dict[str, Types]] = {
 class JsonSchemaObject(BaseModel):
     items: Union[List['JsonSchemaObject'], 'JsonSchemaObject', None]
     uniqueItem: Optional[bool]
-    type: Optional[str]
+    type: Optional[str] = "object"
     format: Optional[str]
     pattern: Optional[str]
     minLength: Optional[int]
@@ -459,14 +459,15 @@ class JsonSchemaParser(Parser):
 
     def parse_raw_obj(self, name: str, raw: Dict) -> None:
         obj = JsonSchemaObject.parse_obj(raw)
-        if obj.is_object:
+        if obj.allOf:
+            self.parse_all_of(name, obj)
+        elif obj.is_object:
             self.parse_object(name, obj)
         elif obj.is_array:
             self.parse_array(name, obj)
         elif obj.enum:
             self.parse_enum(name, obj)
-        elif obj.allOf:
-            self.parse_all_of(name, obj)
+
         else:
             self.parse_root_type(name, obj)
 
