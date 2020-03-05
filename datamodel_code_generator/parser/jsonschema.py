@@ -63,7 +63,7 @@ json_schema_data_formats: Dict[str, Dict[str, Types]] = {
 class JsonSchemaObject(BaseModel):
     items: Union[List['JsonSchemaObject'], 'JsonSchemaObject', None]
     uniqueItem: Optional[bool]
-    type: Optional[str] = "object"
+    type: Optional[str]
     format: Optional[str]
     pattern: Optional[str]
     minLength: Optional[int]
