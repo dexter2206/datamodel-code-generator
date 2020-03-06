@@ -241,6 +241,8 @@ class JsonSchemaParser(Parser):
         for field_name, field in properties.items():  # type: ignore
             if field_name == "or":
                 field_name = "or_"
+            elif field_name[0].isdigit():
+                field_name = "_" + field_name
             is_list = False
             field_types: List[DataType]
             if field.ref:
