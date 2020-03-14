@@ -239,8 +239,8 @@ class JsonSchemaParser(Parser):
         fields: List[DataModelField] = []
 
         for field_name, field in properties.items():  # type: ignore
-            if field_name == "or":
-                field_name = "or_"
+            if field_name in ("or", "schema"):
+                field_name += "_"
             elif field_name[0].isdigit():
                 field_name = "_" + field_name
             is_list = False
