@@ -301,6 +301,9 @@ class JsonSchemaParser(Parser):
         return fields
 
     def parse_object(self, name: str, obj: JsonSchemaObject) -> None:
+        if name == "Union":
+            name = "Union_"
+
         fields = self.parse_object_fields(obj)
 
         self.set_additional_properties(name, obj)
