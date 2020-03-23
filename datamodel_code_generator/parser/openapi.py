@@ -12,6 +12,7 @@ def class_from_path(path):
         )
     )
 
+
 @snooper_to_methods(max_variable_length=None)
 class OpenAPIParser(JsonSchemaParser):
     def parse_raw(self) -> None:
@@ -25,13 +26,11 @@ class OpenAPIParser(JsonSchemaParser):
             self.parse_raw_obj(obj_name, raw_obj)
 
         for path, path_obj in base_parser.specification["paths"].items():
-            print(path)
             for method, method_obj in path_obj.items():
                 if method.lower() not in ["get", "post", "put", "patch", "delete"]:
                     continue
-                print(method)
+
                 for status_code, response in method_obj["responses"].items():
-                    print(status_code)
                     if "content" not in response:
                         continue
                     content_type = response["content"].get("application/json", response["content"].get("text/plain"))
@@ -41,9 +40,27 @@ class OpenAPIParser(JsonSchemaParser):
                     if "$ref" in schema:
                         continue
                     self.parse_raw_obj(class_from_path(path.split("/")) + method.title() + status_code, schema)
-                if "requestBody" not in method_obj:
+
+                if "requestBody" not in method_obj or "$ref" in method_obj["requestBody"]:
                     continue
-                schema = method_obj["requestBody"]["content"]["application/json"]["schema"]
-                if "$ref" in schema:
+                model_name = class_from_path(path.split("/")) + method.title() + "Body"
+                if "schema" in method_obj["requestBody"]:
+                    self.parse_raw_obj(model_name, method_obj["requestBody"]["schema"])
                     continue
-                self.parse_raw_obj(class_from_path(path.split("/")) + method.title() + "Body", schema)
+                content = method_obj["requestBody"].get("content", None)
+                if not content:
+                    print(path, method, "Unable to parse " + str(method_obj["requestBody"]))
+                    continue
+                if "$ref" in content:
+                    continue
+                if "schema" in content:
+                    self.parse_raw_obj(model_name, content["schema"])
+                    continue
+                content_type = content.get("application/json", None)
+                if not content_type:
+                    print(path, method, "Unable to parse " + str(method_obj["requestBody"]))
+                    continue
+                if "$ref" in content_type:
+                    continue
+                if "schema" in content_type:
+                    self.parse_raw_obj(model_name, content_type["schema"])
