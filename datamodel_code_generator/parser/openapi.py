@@ -22,11 +22,15 @@ class OpenAPIParser(JsonSchemaParser):
             self.parse_raw_obj(obj_name, raw_obj)
 
         # query parameters
-        for obj_name, raw_obj in base_parser.specification["components"].get("parameters", {}).items():
+        for obj_name, raw_obj in (
+            base_parser.specification["components"].get("parameters", {}).items()
+        ):
             if raw_obj.get("in", "") == "query" and "schema" in raw_obj:
                 if "$ref" in raw_obj["schema"]:
                     continue
-                self.parse_raw_obj(obj_name[0].upper() + obj_name[1:] + "QueryParam", raw_obj["schema"])
+                self.parse_raw_obj(
+                    obj_name[0].upper() + obj_name[1:] + "QueryParam", raw_obj["schema"]
+                )
 
         for path, path_obj in base_parser.specification["paths"].items():
             for method, method_obj in path_obj.items():
@@ -47,6 +51,33 @@ class OpenAPIParser(JsonSchemaParser):
                     self.parse_raw_obj(
                         class_from_path(path.split("/")) + method.title() + status_code, schema
                     )
+                params = method_obj.get("parameters", [])
+                if params:
+                    for idx, param in enumerate(params):
+                        if (
+                            "$ref" in param
+                            or "schema" not in param
+                            or param.get("in", "") != "query"
+                            or param["schema"].get("format", None) in ["date-time", "uuid"]
+                        ):
+                            continue
+                        suffix = param.get("name", str(idx)) if len(params) > 1 else ""
+                        if suffix:
+                            print("SUFFIX: ", suffix)
+                        self.parse_raw_obj(
+                            class_from_path(path.split("/"))
+                            + method.title()
+                            + "QueryParam"
+                            + suffix,
+                            param["schema"],
+                        )
+                        print(
+                            "DATAMODEL: ",
+                            class_from_path(path.split("/"))
+                            + method.title()
+                            + "QueryParam"
+                            + suffix,
+                        )
 
                 if "requestBody" not in method_obj or "$ref" in method_obj["requestBody"]:
                     continue
