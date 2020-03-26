@@ -60,7 +60,7 @@ class OpenAPIParser(JsonSchemaParser):
                     continue
                 if "$ref" in content:
                     continue
-                if "schema" in content:
+                if "schema" in content and "$ref" not in content["schema"]:
                     self.parse_raw_obj(model_name, content["schema"])
                     continue
                 content_type = content.get("application/json", None)
