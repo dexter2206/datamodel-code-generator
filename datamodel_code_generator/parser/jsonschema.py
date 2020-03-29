@@ -264,7 +264,7 @@ class JsonSchemaParser(Parser):
                 field_types = self.parse_all_of(field_name, field)
             elif field.is_object:
                 if field.properties:
-                    class_name = self.get_class_name(field_name)
+                    class_name = "_" + self.get_class_name(field_name)
                     self.parse_object(class_name, field)
                     field_types = [
                         self.data_type(
