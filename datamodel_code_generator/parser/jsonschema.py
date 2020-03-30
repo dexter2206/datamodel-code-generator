@@ -466,12 +466,12 @@ class JsonSchemaParser(Parser):
         obj = JsonSchemaObject.parse_obj(raw)
         if obj.allOf:
             self.parse_all_of(name, obj)
-        elif obj.is_object:
-            self.parse_object(name, obj)
         elif obj.is_array:
             self.parse_array(name, obj)
         elif obj.enum:
             self.parse_enum(name, obj)
+        elif obj.is_object:
+            self.parse_object(name, obj)
 
         else:
             self.parse_root_type(name, obj)

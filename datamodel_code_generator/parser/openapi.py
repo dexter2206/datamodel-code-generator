@@ -62,21 +62,12 @@ class OpenAPIParser(JsonSchemaParser):
                         ):
                             continue
                         suffix = param.get("name", str(idx)) if len(params) > 1 else ""
-                        if suffix:
-                            print("SUFFIX: ", suffix)
                         self.parse_raw_obj(
                             class_from_path(path.split("/"))
                             + method.title()
                             + "QueryParam"
                             + suffix,
                             param["schema"],
-                        )
-                        print(
-                            "DATAMODEL: ",
-                            class_from_path(path.split("/"))
-                            + method.title()
-                            + "QueryParam"
-                            + suffix,
                         )
 
                 if "requestBody" not in method_obj or "$ref" in method_obj["requestBody"]:
