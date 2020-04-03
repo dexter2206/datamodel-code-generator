@@ -41,7 +41,7 @@ class OpenAPIParser(JsonSchemaParser):
                     if "content" not in response:
                         continue
                     content_type = response["content"].get(
-                        "application/json", response["content"].get("text/plain")
+                        "application/json", response["content"].get("text/plain", response["content"].get("*/*"))
                     )
                     if not content_type:
                         continue
